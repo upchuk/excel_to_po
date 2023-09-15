@@ -1,0 +1,13 @@
+version: "2"
+services:
+  php:
+    image: wodby/drupal-php:8.1-dev
+    environment:
+      DB_HOST: mariadb
+      DB_USER: drupal
+      DB_PASSWORD: drupal
+      DB_NAME: drupal
+      DB_DRIVER: mysql
+      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
+    volumes:
+      - ./:/var/www/html
