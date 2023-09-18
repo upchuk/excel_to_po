@@ -1,6 +1,7 @@
 <?php
 
 use Gettext\Generator\PoGenerator;
+use Gettext\Loader\PoLoader;
 use Gettext\Translation;
 use Gettext\Translations;
 use Shuchkin\SimpleXLSX;
@@ -14,7 +15,7 @@ use Symfony\Component\Console\SingleCommandApplication;
 require 'vendor/autoload.php';
 
 (new SingleCommandApplication())
-  ->setName('Process and Excel to PO')
+  ->setName('Process an Excel to PO')
   ->addArgument('file', InputArgument::REQUIRED, 'The file')
   ->addOption('rows', null, InputOption::VALUE_OPTIONAL, 'The number of rows to export', 1000000)
   ->setCode(function (InputInterface $input, OutputInterface $output): int {
@@ -83,8 +84,32 @@ require 'vendor/autoload.php';
     }
 
     $generator = new PoGenerator();
+    $loader = new PoLoader();
     foreach ($translations_objects as $object) {
-      $generator->generateFile($object, __DIR__ . '/output/' . $object->getLanguage() . '.po');
+      $outputPath = __DIR__ . '/output/' . $object->getLanguage() . '.po';
+
+      // Check if the file already exists
+      if (file_exists($outputPath)) {
+        // Load existing translations
+        $existingTranslations = $loader->loadFile($outputPath);
+        foreach ($object as $translation) {
+          // If the existing translations don't already have this translation, add it.
+          if (!$existingTranslations->find($translation->getContext(), $translation->getOriginal())) {
+            $existingTranslations->add($translation);
+          }
+        }
+        // Generate the updated .po file with merged translations.
+        $generator->generateFile($existingTranslations, $outputPath);
+      } else {
+        // If the file doesn't exist, simply generate it.
+        $generator->generateFile($object, $outputPath);
+      }
+      // Post-process the file in order to remove Gettext headers.
+      $content = file_get_contents($outputPath);
+      $content = preg_replace('/"Language:.*?"\n/', '', $content);
+      $content = preg_replace('/"Plural-Forms:.*?"\n/', '', $content);
+      $content = preg_replace('/"X-Domain:.*?"\n/', '', $content);
+      file_put_contents($outputPath, $content);
     }
 
     return Command::SUCCESS;

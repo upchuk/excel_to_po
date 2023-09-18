@@ -20,7 +20,7 @@ The excel needs to be in the following format:
 php index.php [file] [--rows=INT]
 ```
 
-For example, you can add the excel file into the a `source` folder of the repo and run the command:
+For example, you can add the Excel file into the a `source` folder of the repo and run the command:
 
 ```
 php index.php source/excel.xlsx
@@ -32,4 +32,5 @@ Optionally, you can specify how many rows from the Excel to parse
 php index.php source/excel.xlsx --rows=5
 ```
 
-The results are dumped into the `output` folder (which is ignored by git) as individual .po files.
+The results are dumped into the `output` folder (which is ignored by git) as individual .po files. If .po files exists
+in the path, the existing .po files will be appended with the new translations.
