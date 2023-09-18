@@ -17,7 +17,7 @@ The excel needs to be in the following format:
 ## Command
 
 ```
-php index.php [file] [--rows=INT]
+php index.php [file] [--rows=INT] [--prefix=STRING]
 ```
 
 For example, you can add the Excel file into the a `source` folder of the repo and run the command:
@@ -26,10 +26,10 @@ For example, you can add the Excel file into the a `source` folder of the repo a
 php index.php source/excel.xlsx
 ```
 
-Optionally, you can specify how many rows from the Excel to parse
+Optionally, you can specify how many rows from the Excel to parse and a string as prefix for the .po file name
 
 ```
-php index.php source/excel.xlsx --rows=5
+php index.php source/excel.xlsx --rows=5 --prefix=my_module-
 ```
 
 The results are dumped into the `output` folder (which is ignored by git) as individual .po files. If .po files exists
